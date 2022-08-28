@@ -2,8 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
@@ -34,16 +32,12 @@ public class ListOfStates {
                 boolean specialVat = toBoolean(specialVatAsText);
 
                 State state = new State(stateShortcut, stateFullName, fullVat, discountedVat, specialVat);
-
                 listOfStates.add(state);
-
             }
         } catch (FileNotFoundException e) {
             throw new StateException("Soubor " + filename + " nebyl nalezen:" + e.getLocalizedMessage());
         } catch (ParseException e) {
             throw new StateException("Špatný formát DPH " + e.getLocalizedMessage());
-        } catch (NumberFormatException e) {
-            throw new StateException("Špatný formát dnů " + e.getLocalizedMessage());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("true or false is allowed");
         }
@@ -70,5 +64,13 @@ public class ListOfStates {
         else  {
             throw new IllegalArgumentException("true or false is allowed");
         }
+    }
+
+    public ArrayList<State> getListOfStates() {
+        return listOfStates;
+    }
+
+    public void setListOfStates(ArrayList<State> listOfStates) {
+        this.listOfStates = listOfStates;
     }
 }

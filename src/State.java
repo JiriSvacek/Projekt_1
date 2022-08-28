@@ -1,7 +1,7 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class State {
+public class State implements Comparable<State>{
     private String stateShortcut;
     private String stateFullName;
     private float fullVat;
@@ -18,6 +18,11 @@ public class State {
 
     public String getDescritionWithBasicVat() {
         return this.getStateFullName() + " (" + this.getStateShortcut() + "): " + this.getFullVat() + " %";
+    }
+
+    @Override
+    public int compareTo(State s) {
+        return Float.compare(this.getFullVat(), s.getFullVat());
     }
 
     public static float round(float d, int decimalPlace) {
