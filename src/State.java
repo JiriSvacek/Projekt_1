@@ -20,7 +20,7 @@ public class State implements Comparable<State>{
     }
 
     public String getDescritionWithBasicVat() {
-        return this.getStateFullName() + " (" + this.getStateShortcut() + "): " + this.getFullVat() + " %";
+        return this.getStateFullName() + " (" + this.getStateShortcut() + "): " + this.getFullVatStr() + " %";
     }
 
     @Override

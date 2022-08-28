@@ -31,11 +31,7 @@ public class ListOfStates {
                 State state = new State(stateShortcut, stateFullName, fullVat, discountedVat, specialVat);
                 listOfStates.add(state);
             }
-
-            this.seeList();
             Collections.sort(this.getListOfStates());
-            this.seeList();
-
         } catch (FileNotFoundException e) {
             throw new StateException("Soubor " + filename + " nebyl nalezen:" + e.getLocalizedMessage());
         } catch (ParseException e) {
@@ -45,13 +41,21 @@ public class ListOfStates {
         }
     }
 
-    public void seeList() {
-        System.out.println("Seznam rostlin: ");
+
+    public void seeListOver() {
         for (State state: listOfStates) {
-            System.out.println("Jmeno: " + state.getStateFullName() + ", DPH: " + state.getFullVatStr());
+            System.out.println(state.getDescritionWithBasicVat());
         }
-        System.out.println("---------------");
     }
+
+    public void seeListOver(float over) {
+        for (State state: listOfStates) {
+            if (over >= state.getFullVat()) break;
+            System.out.println(state.getDescritionWithBasicVat());
+        }
+    }
+
+
 
     private float toLong(String number) throws ParseException {
         if ((number.matches("\\d+")) | (number.contains("."))){
