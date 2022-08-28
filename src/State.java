@@ -1,5 +1,6 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class State implements Comparable<State>{
     private String stateShortcut;
@@ -7,6 +8,8 @@ public class State implements Comparable<State>{
     private float fullVat;
     private float discountedVat;
     private boolean specialVat;
+
+    static DecimalFormat myDF = new DecimalFormat("0.#");
 
     public State(String stateShortcut, String stateFullName, float fullVat, float discountedVat, boolean specialVat) {
         this.stateShortcut = stateShortcut;
@@ -22,7 +25,7 @@ public class State implements Comparable<State>{
 
     @Override
     public int compareTo(State s) {
-        return Float.compare(this.getFullVat(), s.getFullVat());
+        return Float.compare(s.getFullVat(), this.getFullVat());
     }
 
     public static float round(float d, int decimalPlace) {
@@ -49,6 +52,14 @@ public class State implements Comparable<State>{
 
     public float getFullVat() {
         return fullVat;
+    }
+
+    public String getFullVatStr() {
+        return myDF.format(this.fullVat);
+    }
+
+    public String getDiscountedVatStr() {
+        return myDF.format(this.discountedVat);
     }
 
     public void setFullVat(float fullVat) {

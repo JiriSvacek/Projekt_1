@@ -3,15 +3,12 @@ import java.io.FileNotFoundException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class ListOfStates {
     private ArrayList<State> listOfStates = new ArrayList<>();
-
-    public void addPlant(State state) {
-        listOfStates.add(state);
-    }
 
     public void addFromFile(String filename) throws StateException {
         String line;
@@ -34,6 +31,11 @@ public class ListOfStates {
                 State state = new State(stateShortcut, stateFullName, fullVat, discountedVat, specialVat);
                 listOfStates.add(state);
             }
+
+            this.seeList();
+            Collections.sort(this.getListOfStates());
+            this.seeList();
+
         } catch (FileNotFoundException e) {
             throw new StateException("Soubor " + filename + " nebyl nalezen:" + e.getLocalizedMessage());
         } catch (ParseException e) {
@@ -41,6 +43,14 @@ public class ListOfStates {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("true or false is allowed");
         }
+    }
+
+    public void seeList() {
+        System.out.println("Seznam rostlin: ");
+        for (State state: listOfStates) {
+            System.out.println("Jmeno: " + state.getStateFullName() + ", DPH: " + state.getFullVatStr());
+        }
+        System.out.println("---------------");
     }
 
     private float toLong(String number) throws ParseException {
