@@ -1,5 +1,8 @@
+import javax.naming.LimitExceededException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -42,20 +45,76 @@ public class ListOfStates {
     }
 
 
-    public void seeListOver() {
-        for (State state: listOfStates) {
-            System.out.println(state.getDescritionWithBasicVat());
+    public void seeList() {
+        for (State state: this.listOfStates) {
+            System.out.println(getInfo(state));
         }
     }
 
     public void seeListOver(float over) {
-        for (State state: listOfStates) {
+        for (State state: this.listOfStates) {
             if (over >= state.getFullVat()) break;
-            System.out.println(state.getDescritionWithBasicVat());
+            System.out.println(getInfo(state));
         }
     }
 
+    public void seeListOver(float over, boolean status) {
+        for (State state: this.listOfStates) {
+            if (over >= state.getFullVat()) break;
+            if (state.isSpecialVat() == status) {System.out.println(getInfo(state));}
+        }
+    }
 
+    public void toFile(float limit, boolean status) throws StateException {
+        ArrayList<ArrayList<State>> sortedStates;
+        sortedStates = sorting(limit, status);
+        try(FileWriter writer = new FileWriter("vat-over-" + limit + ".txt")) {
+            for (State state: sortedStates.get(0)) {
+                System.out.println(getInfo(state));
+                writer.write(getInfo(state) + System.lineSeparator());
+            }
+            String text = "Sazba VAT 20 % nebo nižší nebo " + specialVatToString(status) + " speciální sazbu: ";
+            System.out.print(text);
+            writer.write(text);
+            for (State state: sortedStates.get(1)) {
+                text = state.getStateShortcut() + ", ";
+                System.out.print(text);
+                writer.write(text);
+            }
+        } catch (IOException e) {
+            throw new StateException("Soubor nemohl být vytvořen" + e.getLocalizedMessage());
+        }
+    }
+
+    private String specialVatToString(boolean status) {
+        return status? "používají" : "nepouživají";
+    }
+
+    private ArrayList<ArrayList<State>> sorting(float limit, boolean status) {
+        ArrayList<State> listOfStatesGood = new ArrayList<>();
+        ArrayList<State> listOfStatesOther= new ArrayList<>();
+        for (State state: this.listOfStates) {
+            if (state.isSpecialVat() == status && limit < state.getFullVat()) {
+                listOfStatesGood.add(state);
+            } else {
+                listOfStatesOther.add(state);
+            }
+        }
+        ArrayList<ArrayList<State>> result = new ArrayList<ArrayList<State>>();
+        result.add(listOfStatesGood);
+        result.add(listOfStatesOther);
+        return result;
+    }
+
+    private String getInfo(State state) {
+        return state.getStateFullName() + " (" + state.getStateShortcut() + "): " + state.getFullVatStr() + " %";
+    }
+
+    private void forPoint5(float limit, boolean status) {
+        ArrayList<State> StatesHigherThan = new ArrayList<>();
+        ArrayList<State> StatesOthers = new ArrayList<>();
+
+    }
 
     private float toLong(String number) throws ParseException {
         if ((number.matches("\\d+")) | (number.contains("."))){
