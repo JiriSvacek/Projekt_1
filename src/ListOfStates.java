@@ -81,6 +81,7 @@ public class ListOfStates {
                 System.out.println(getInfo(state));
                 writer.write(getInfo(state) + System.lineSeparator());
             }
+            System.out.println("=".repeat(25));
             String text = "Sazba VAT "+ limit +" % nebo nižší nebo " + specialVatToString(status)
                     + " speciální sazbu: ";
             System.out.print(text);
