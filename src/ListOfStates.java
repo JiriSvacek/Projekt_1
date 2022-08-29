@@ -104,15 +104,14 @@ public class ListOfStates {
         System.out.println("Zadejte hodnotu základního DPH podle, kterého se vyfiltrují státy : ");
         String input = reader.nextLine();
         if (input.isEmpty()) {return 20;}
-        else {
-            try {
-                float n = Float.parseFloat(input);
-                if (n < 0 | n > 100) {
-                    throw new StateException("Zadejte číslo mezi 0 a 100");
-                } else {return n;}
-            } catch (NumberFormatException e) {
-                throw new StateException("Nazadali jste číslo (float)");
-            }
+        if (input.indexOf(",") > 0) {input = input.replace(",", ".");}
+        try {
+            float n = Float.parseFloat(input);
+            if (n < 0 | n > 100) {
+                throw new StateException("Zadejte číslo mezi 0 a 100");
+            } else {return n;}
+        } catch (NumberFormatException e) {
+            throw new StateException("Nazadali jste číslo (float)");
         }
     }
 
