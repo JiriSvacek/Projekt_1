@@ -1,8 +1,9 @@
-import javax.naming.LimitExceededException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -65,7 +66,14 @@ public class ListOfStates {
         }
     }
 
-    public void toFile(float limit, boolean status) throws StateException {
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, RoundingMode.HALF_UP);
+        return bd.floatValue();
+    }
+
+    public void toFile(boolean status) throws StateException {
+        float limit = round(setValueOfVatSorter(), 2);
         ArrayList<ArrayList<State>> sortedStates;
         sortedStates = sorting(limit, status);
         try(FileWriter writer = new FileWriter("vat-over-" + limit + ".txt")) {
@@ -73,7 +81,8 @@ public class ListOfStates {
                 System.out.println(getInfo(state));
                 writer.write(getInfo(state) + System.lineSeparator());
             }
-            String text = "Sazba VAT 20 % nebo nižší nebo " + specialVatToString(status) + " speciální sazbu: ";
+            String text = "Sazba VAT "+ limit +" % nebo nižší nebo " + specialVatToString(status)
+                    + " speciální sazbu: ";
             System.out.print(text);
             writer.write(text);
             for (State state: sortedStates.get(1)) {
@@ -82,12 +91,29 @@ public class ListOfStates {
                 writer.write(text);
             }
         } catch (IOException e) {
-            throw new StateException("Soubor nemohl být vytvořen" + e.getLocalizedMessage());
+            throw new StateException("Soubor nemohl být vytvořen " + e.getLocalizedMessage());
         }
     }
 
     private String specialVatToString(boolean status) {
         return status? "používají" : "nepouživají";
+    }
+
+    private static float setValueOfVatSorter() throws StateException {
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Zadejte hodnotu základního DPH podle, kterého se vyfiltrují státy : ");
+        String input = reader.nextLine();
+        if (input.isEmpty()) {return 20;}
+        else {
+            try {
+                float n = Float.parseFloat(input);
+                if (n < 0 | n > 100) {
+                    throw new StateException("Zadejte číslo mezi 0 a 100");
+                } else {return n;}
+            } catch (NumberFormatException e) {
+                throw new StateException("Nazadali jste číslo (float)");
+            }
+        }
     }
 
     private ArrayList<ArrayList<State>> sorting(float limit, boolean status) {
