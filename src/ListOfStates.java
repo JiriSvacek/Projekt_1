@@ -28,8 +28,8 @@ public class ListOfStates {
                 String discountedVatAsText = items[3];
                 String specialVatAsText = items[4];
 
-                float fullVat = toLong(fullVatAsText);
-                float discountedVat = toLong(discountedVatAsText);
+                double fullVat = toDouble(fullVatAsText);
+                double discountedVat = toDouble(discountedVatAsText);
                 boolean specialVat = toBoolean(specialVatAsText);
 
                 State state = new State(stateShortcut, stateFullName, fullVat, discountedVat, specialVat);
@@ -52,28 +52,22 @@ public class ListOfStates {
         }
     }
 
-    public void seeListOver(float over) {
+    public void seeListOver(double over) {
         for (State state: this.listOfStates) {
             if (over >= state.getFullVat()) break;
             System.out.println(getInfo(state));
         }
     }
 
-    public void seeListOver(float over, boolean status) {
+    public void seeListOver(double over, boolean status) {
         for (State state: this.listOfStates) {
             if (over >= state.getFullVat()) break;
             if (state.isSpecialVat() == status) {System.out.println(getInfo(state));}
         }
     }
 
-    public static float round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
-        bd = bd.setScale(decimalPlace, RoundingMode.HALF_UP);
-        return bd.floatValue();
-    }
-
     public void toFile(boolean status) throws StateException {
-        float limit = round(setValueOfVatSorter(), 2);
+        double limit = State.round(setValueOfVatSorter(), 2);
         ArrayList<ArrayList<State>> sortedStates;
         sortedStates = sorting(limit, status);
         try(FileWriter writer = new FileWriter("vat-over-" + limit + ".txt")) {
@@ -100,23 +94,23 @@ public class ListOfStates {
         return status? "používají" : "nepouživají";
     }
 
-    private static float setValueOfVatSorter() throws StateException {
+    private static double setValueOfVatSorter() throws StateException {
         Scanner reader = new Scanner(System.in);
         System.out.println("Zadejte hodnotu základního DPH podle, kterého se vyfiltrují státy : ");
         String input = reader.nextLine();
         if (input.isEmpty()) {return 20;}
-        if (input.indexOf(",") > 0) {input = input.replace(",", ".");}
+        input = input.replace(",", ".");
         try {
-            float n = Float.parseFloat(input);
+            double n = Double.parseDouble(input);
             if (n < 0 | n > 100) {
                 throw new StateException("Zadejte číslo mezi 0 a 100");
             } else {return n;}
         } catch (NumberFormatException e) {
-            throw new StateException("Nazadali jste číslo (float)");
+            throw new StateException("Nazadali jste číslo (double)");
         }
     }
 
-    private ArrayList<ArrayList<State>> sorting(float limit, boolean status) {
+    private ArrayList<ArrayList<State>> sorting(double limit, boolean status) {
         ArrayList<State> listOfStatesGood = new ArrayList<>();
         ArrayList<State> listOfStatesOther= new ArrayList<>();
         for (State state: this.listOfStates) {
@@ -136,24 +130,18 @@ public class ListOfStates {
         return state.getStateFullName() + " (" + state.getStateShortcut() + "): " + state.getFullVatStr() + " %";
     }
 
-    private void forPoint5(float limit, boolean status) {
-        ArrayList<State> StatesHigherThan = new ArrayList<>();
-        ArrayList<State> StatesOthers = new ArrayList<>();
-
-    }
-
-    private float toLong(String number) throws ParseException {
+    private double toDouble(String number) throws ParseException {
         if ((number.matches("\\d+")) | (number.contains("."))){
-            return Float.parseFloat(number);
+            return Double.parseDouble(number);
         } else {
             return fromStringToFloatWithComma(number);
         }
     }
 
-    private static float fromStringToFloatWithComma(String digits) throws ParseException {
+    private static double fromStringToFloatWithComma(String digits) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(Locale.GERMAN);
         Number n = format.parse(digits);
-        return n.floatValue();
+        return n.doubleValue();
     }
 
     private boolean toBoolean(String s) {
@@ -166,7 +154,7 @@ public class ListOfStates {
     }
 
     public ArrayList<State> getListOfStates() {
-        return listOfStates;
+        return new ArrayList<>(listOfStates);
     }
 
     public void setListOfStates(ArrayList<State> listOfStates) {

@@ -5,13 +5,13 @@ import java.text.DecimalFormat;
 public class State implements Comparable<State>{
     private String stateShortcut;
     private String stateFullName;
-    private float fullVat;
-    private float discountedVat;
+    private double fullVat;
+    private double discountedVat;
     private boolean specialVat;
 
     static DecimalFormat myDF = new DecimalFormat("0.#");
 
-    public State(String stateShortcut, String stateFullName, float fullVat, float discountedVat, boolean specialVat) {
+    public State(String stateShortcut, String stateFullName, double fullVat, double discountedVat, boolean specialVat) {
         this.stateShortcut = stateShortcut;
         this.stateFullName = stateFullName;
         this.fullVat = round(fullVat, 2);
@@ -25,13 +25,13 @@ public class State implements Comparable<State>{
 
     @Override
     public int compareTo(State s) {
-        return Float.compare(s.getFullVat(), this.getFullVat());
+        return Double.compare(s.getFullVat(), this.getFullVat());
     }
 
-    public static float round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
+    public static double round(double d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Double.toString(d));
         bd = bd.setScale(decimalPlace, RoundingMode.HALF_UP);
-        return bd.floatValue();
+        return bd.doubleValue();
     }
 
     public String getStateShortcut() {
@@ -50,7 +50,7 @@ public class State implements Comparable<State>{
         this.stateFullName = stateFullName;
     }
 
-    public float getFullVat() {
+    public double getFullVat() {
         return fullVat;
     }
 
@@ -62,15 +62,15 @@ public class State implements Comparable<State>{
         return myDF.format(this.discountedVat);
     }
 
-    public void setFullVat(float fullVat) {
+    public void setFullVat(double fullVat) {
         this.fullVat = fullVat;
     }
 
-    public float getDiscountedVat() {
+    public double getDiscountedVat() {
         return discountedVat;
     }
 
-    public void setDiscountedVat(float discountedVat) {
+    public void setDiscountedVat(double discountedVat) {
         this.discountedVat = discountedVat;
     }
 
